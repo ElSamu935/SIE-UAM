@@ -55,7 +55,6 @@ Gestionar evaluación de saberes previamente adquiridos	Proceso excepcional para
 Gestionar evaluación curricular (Especial)	Para alumnos a los que les falte una sola UEA para terminar los créditos de su plan de estudios.	Art. 42: Última oportunidad antes de la baja definitiva.
 Flujo de Evaluación de Recuperación:
 
-Plaintext
 ┌─────────────────────────────────────────────────────────────────────────────────┐
 │                    PROCESO DE EVALUACIÓN DE RECUPERACIÓN                        │
 ├─────────────────────────────────────────────────────────────────────────────────┤
@@ -80,6 +79,7 @@ Plaintext
 │  └─────────────────┘                                                            │
 │                                                                                 │
 └─────────────────────────────────────────────────────────────────────────────────┘
+
 Explicación didáctica: Las evaluaciones especiales y de recuperación manejan su propio ciclo de vida. Un error común al programar esto es mezclar los identificadores de actas. El SiE-UAM debe generar un ID_Acta completamente nuevo para la evaluación de recuperación, vinculándolo al alumno, pero desvinculándolo del grupo ordinario original (ya que un examen de recuperación puede agrupar a estudiantes de diferentes profesores).
 
 Submódulo 7.3: Rectificación de Calificaciones
@@ -92,7 +92,6 @@ Flujo de aprobación jerárquica	Si la solicitud está fuera de tiempo ordinario
 Ejecutar rectificación en BD	Una vez aprobada, el sistema actualiza la calificación, insertando un registro en la tabla de auditoría (logs).	Integridad referencial.
 Flujo de Rectificación (Auditoría Técnica):
 
-Plaintext
 ┌─────────────────────────────────────────────────────────────────────────────────┐
 │                   FLUJO DE APROBACIÓN PARA RECTIFICACIÓN                        │
 ├─────────────────────────────────────────────────────────────────────────────────┤
@@ -129,6 +128,7 @@ Plaintext
 │                     └────────────────────┘                                      │
 │                                                                                 │
 └─────────────────────────────────────────────────────────────────────────────────┘
+
 Variables de Datos Críticas del Módulo 7
 
 Variable / Campo,Descripción,Tipo,Catálogo / Restricción
