@@ -75,6 +75,7 @@
 │                                                                                 │
 └─────────────────────────────────────────────────────────────────────────────────┘
 
+```
 
 > **Explicación didáctica:** Las evaluaciones especiales y de recuperación manejan su propio ciclo de vida. Un error común al programar esto es mezclar los identificadores de actas. El SiE-UAM debe generar un `ID_Acta` completamente nuevo para la evaluación de recuperación, vinculándolo al alumno, pero desvinculándolo del grupo ordinario original (ya que un examen de recuperación puede agrupar a estudiantes de diferentes profesores).
 
@@ -127,3 +128,27 @@
 │                     └────────────────────┘                                      │
 │                                                                                 │
 └─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Variables de Datos Críticas del Módulo 7
+
+| Variable / Campo | Descripción | Tipo | Catálogo / Restricción |
+|------------------|-------------|------|------------------------|
+| **ID_Acta** | Identificador único del acta generada | Alfanumérico | PK (Llave primaria) |
+| **Clave_UEA** | Clave institucional de la materia | Numérico | FK (Llave foránea a Catálogo UEAs) |
+| **Tipo_Eval** | Modalidad de la evaluación | Carácter | O=Ordinaria, R=Recuperación, E=Especial |
+| **Calificacion** | Nota asignada al alumno | Carácter | MB, B, S, NA, NP (No Presentó) |
+| **Estado_Acta** | Control del ciclo de vida del acta | Numérico | 1=Abierta, 2=Capturando, 3=Firmada_Cerrada |
+| **Folio_Rectif** | Número de trámite si hubo rectificación | Numérico | Nulo si nunca se ha rectificado |
+
+### Integración con Otros Módulos
+
+| Módulo | Punto de Integración | Datos Intercambiados |
+|--------|---------------------|---------------------|
+| **Módulo 6: Programación** | Generación inicial de actas | Toma listas de alumnos inscritos oficialmente en grupos para generar las actas vacías. |
+| **Módulo 4: Profesores** | Permisos y firmas | Valida que el `ID_Profesor` logueado coincida con el profesor asignado a la UEA para permitir la firma. |
+| **Módulo 8: Kardex** | Asentamiento histórico | Envía las calificaciones finales (MB, B, S) para calcular el promedio global y los créditos acumulados. |
+
+### Conclusión del Módulo 7
+
+El **Módulo de Evaluación** representa el núcleo transaccional más sensible del SiE-UAM. A nivel de ingeniería de software, su mayor reto no es almacenar una letra (MB, B, S, NA), sino gestionar la concurrencia, la seguridad y los permisos. Garantizar que un acta firmada sea inmutable y que los procesos de rectificación dejen una huella auditable (logs) protege tanto a los alumnos como a los profesores de alteraciones no autorizadas, respetando al pie de la letra la legislación del RESUAM.
