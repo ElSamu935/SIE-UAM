@@ -74,3 +74,56 @@
 │  └─────────────────┘                                                            │
 │                                                                                 │
 └─────────────────────────────────────────────────────────────────────────────────┘
+
+
+> **Explicación didáctica:** Las evaluaciones especiales y de recuperación manejan su propio ciclo de vida. Un error común al programar esto es mezclar los identificadores de actas. El SiE-UAM debe generar un `ID_Acta` completamente nuevo para la evaluación de recuperación, vinculándolo al alumno, pero desvinculándolo del grupo ordinario original (ya que un examen de recuperación puede agrupar a estudiantes de diferentes profesores).
+
+### Submódulo 7.3: Rectificación de Calificaciones
+
+| Funcionalidad | Descripción | Regla de Negocio (RESUAM) |
+|--------------|-------------|--------------------------|
+| Levantar solicitud de rectificación | El profesor titular inicia un trámite formal para corregir una calificación previamente firmada en un acta. | Procedimiento normativo post-acta. |
+| Validar vigencia temporal | El sistema permite rectificaciones ágiles si se hacen dentro del plazo marcado por el calendario escolar. | Calendario Escolar UAM. |
+| Gestionar justificación académica | Captura del motivo por el cual se solicita el cambio (ej. error de captura, revisión de examen). | Transparencia de procesos. |
+| Flujo de aprobación jerárquica | Si la solicitud está fuera de tiempo ordinario, el sistema la enruta para autorización del Director de División o Consejo Divisional. | Controles y balances institucionales. |
+| Ejecutar rectificación en BD | Una vez aprobada, el sistema actualiza la calificación, insertando un registro en la tabla de auditoría (logs). | Integridad referencial. |
+
+**Flujo de Rectificación (Auditoría Técnica):**
+
+```text
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                   FLUJO DE APROBACIÓN PARA RECTIFICACIÓN                        │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                 │
+│ ┌────────────────┐    ┌────────────────┐                                        │
+│ │ Profesor nota  │───▶│ Crea solicitud │                                        │
+│ │ error en Acta  │    │ en el Sistema  │                                        │
+│ └────────────────┘    └────────────────┘                                        │
+│                               │                                                 │
+│                               ▼                                                 │
+│                       ¿Dentro del plazo                                         │
+│                       calendario?                                               │
+│                        /             \                                          │
+│                   SÍ  /               \ NO                                      │
+│                      ▼                 ▼                                        │
+│       ┌────────────────┐         ┌────────────────┐                             │
+│       │ Aprobación     │         │ Requiere VoBo. │                             │
+│       │ Automática     │         │ de Consejo/Dir.│                             │
+│       │ de Sist.       │         │ Divisional     │                             │
+│       └────────────────┘         └────────────────┘                             │
+│                      \                 /                                        │
+│                       \               /                                         │
+│                        ▼             ▼                                          │
+│                     ┌────────────────────┐                                      │
+│                     │ Actualización BD + │                                      │
+│                     │ Registro en Log de │                                      │
+│                     │ Auditoría          │                                      │
+│                     └────────────────────┘                                      │
+│                               │                                                 │
+│                               ▼                                                 │
+│                     ┌────────────────────┐                                      │
+│                     │ Sincronización con │                                      │
+│                     │ Kardex (Módulo 8)  │                                      │
+│                     └────────────────────┘                                      │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
