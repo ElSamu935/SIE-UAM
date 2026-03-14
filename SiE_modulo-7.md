@@ -1,4 +1,4 @@
-# Sistema de Información Escolar (SiE-UAM) - Módulo 7: Evaluación
+# Sistema de Información Escolar (SiE-UAM) - Módulo 7: Evaluación Académica
 **Autor:** Omar Samuel Hernández Acosta
 **Asistente:** Gemini
 **Fecha:** 12 de marzo de 2026
@@ -17,138 +17,132 @@
 
 ### Propósito y Alcance
 
-**Propósito:** Gestionar de manera integral, segura y auditable el proceso de evaluación del aprendizaje de los alumnos de la UAM. Esto abarca desde la generación de actas de evaluación ordinaria, el registro de calificaciones (MB, B, S, NA), la gestión de evaluaciones de recuperación y especiales, hasta los procesos normativos de rectificación de calificaciones, garantizando la inmutabilidad de los registros una vez firmados.
+**Propósito:** Gestionar de manera integral, segura y auditable el proceso de evaluación del aprendizaje de los alumnos de la UAM. Esto abarca desde la generación de actas de evaluación ordinaria, el registro de calificaciones (MB, B, S, NA, I y equivalencias), la gestión de evaluaciones de recuperación y especiales, hasta los procesos normativos de impugnación y rectificación, garantizando la inmutabilidad y trazabilidad de los registros.
 
 **Alcance Normativo:**
-* **RESUAM:** Capítulo V (Evaluación del Aprendizaje, Art. 30-43), Capítulo VI (Rectificación de Calificaciones).
-* **Escala de Calificaciones UAM:** Muy Bien (MB), Bien (B), Suficiente (S), No Acreditado (NA).
-* **Tipos de Evaluación:** Ordinaria, Recuperación, Curricular/Especial.
+* **RESUAM:** Capítulo V (Evaluación del Aprendizaje, Art. 30-43), Capítulo IX (Evaluaciones, Art. 84-95).
+* **Escala de Calificaciones:** MB (10), B (8), S (6), NA (0). Especiales: I (Incompleto - Posgrado), AO, EE, RE, EQ.
+* **Integración Operativa:** Completamente alineado con el Submódulo 4.4 de Programación Escolar.
 
-### Submódulo 7.1: Gestión de Actas (Evaluación Ordinaria)
+---
 
-| Funcionalidad | Descripción | Regla de Negocio (RESUAM) |
-|--------------|-------------|--------------------------|
-| Generar acta de evaluación | Creación del documento digital con la lista de alumnos inscritos en un grupo/UEA. | Art. 32: La evaluación se asienta en actas oficiales. |
-| Capturar calificaciones | Registro de la calificación final obtenida por cada alumno en la escala oficial de la UAM. | Art. 35: Escala MB, B, S, NA. |
-| Validar captura completa | El sistema no permite cerrar el acta si existen alumnos sin calificación asignada (evita espacios en blanco). | Control de integridad de datos. |
-| Firma electrónica de actas | Autorización definitiva del acta por parte del profesor titular mediante credenciales seguras. | Art. 32: El profesor es responsable de asentar y firmar. |
-| Cierre y candado de acta | Bloqueo inmutable del acta una vez firmada. Cualquier cambio posterior requiere el submódulo 7.3. | Seguridad y auditoría de la base de datos. |
-| Notificación automática | Al firmar el acta, las calificaciones acreditadas y no acreditadas pasan inmediatamente al Kardex temporal del alumno. | Transparencia y sincronización con Módulo 8. |
+### Submódulo 7.1: Gestión de Actas y Roles de Evaluación
 
-> **Explicación didáctica:** En el diseño de software escolar, un "Acta" no es una simple tabla que se actualiza. Es un **registro inmutable de estado**. Una vez que el profesor la "firma" y "cierra", el sistema debe aplicar un candado transaccional. Si el profesor cometió un error tipográfico y puso "NA" en lugar de "MB", el sistema no le permitirá simplemente "editar" el registro; lo forzará a usar el proceso de *Rectificación*, manteniendo un rastro de auditoría completo.
-
-### Submódulo 7.2: Evaluaciones Especiales y Recuperación
+La generación y gestión de actas es el proceso de asentar legalmente el rendimiento académico del trimestre.
 
 | Funcionalidad | Descripción | Regla de Negocio (RESUAM) |
 |--------------|-------------|--------------------------|
-| Solicitar evaluación de recuperación | Permite al alumno que obtuvo "NA" o no presentó la evaluación ordinaria inscribirse a la recuperación. | Art. 36 y 37: Derecho a recuperación. |
-| Validar límite de oportunidades | Verifica cuántas veces ha presentado el alumno la UEA en recuperación. | Art. 38: Límite de oportunidades reglamentarias. |
-| Generar actas de recuperación | Agrupa a los alumnos solicitantes en actas específicas para esta modalidad, independientes del grupo original. | Organización de la programación escolar. |
-| Gestionar evaluación de saberes previamente adquiridos | Proceso excepcional para alumnos que demuestran dominio de la UEA sin haberla cursado ordinariamente. | Art. 40: Evaluaciones por acreditación de saberes. |
-| Gestionar evaluación curricular (Especial) | Para alumnos a los que les falte una sola UEA para terminar los créditos de su plan de estudios. | Art. 42: Última oportunidad antes de la baja definitiva. |
+| Generar acta única | Una sola acta por grupo por tipo de evaluación. | Art. 91: Responsabilidad de evaluación. |
+| Gestión de Roles en Acta | Diferenciación estricta de funciones para el profesor: Calificar y/o Firmar. | Lineamientos operativos UAM. |
+| Roles en Eval. Global | Profesor único califica y firma. Si hay varios sinodales, dividen las funciones. | Lineamientos operativos UAM. |
+| Registro de calificaciones | Asentamiento de notas en la escala numérica oficial o letras de equivalencia. | Art. 87: Escala de calificaciones. |
+| Estado de Incompleto (I) | Uso exclusivo para alumnos de posgrado. Plazo máximo de 1 trimestre para calificar. | Art. 87: Estado de Incompleto. |
+| Firma y Cierre (5 días) | El profesor y secretario académico tienen 5 días hábiles tras la evaluación para firmar. | Art. 91: Plazo de entrega de actas. |
 
-**Flujo de Evaluación de Recuperación:**
+> **Explicación didáctica:** En el diseño de software escolar, un "Acta" no es una simple tabla que se actualiza. Es un **registro inmutable de estado**. Una vez que el profesor la "firma" y "cierra", el sistema debe aplicar un candado transaccional a nivel de Base de Datos. La separación de roles (quién califica vs. quién firma) es vital para el modelado en Enterprise Architect (UML).
+
+---
+
+### Submódulo 7.2: Evaluaciones de Recuperación y Quinta Oportunidad
+
+Gestión de las oportunidades extraordinarias de acreditación, aplicables exclusivamente a nivel licenciatura.
+
+| Funcionalidad | Descripción | Regla de Negocio (RESUAM) |
+|--------------|-------------|--------------------------|
+| Programar recuperación | Permite hasta 4 recuperaciones por UEA en licenciatura (NO aplica a posgrado). | Art. 89: Límite de recuperaciones. |
+| Roles en Recuperación | El Profesor titular califica el examen, pero el **Coordinador del Programa firma el acta**. | Art. 92 RESUAM. |
+| Validar pago de evaluación | El sistema verifica el pago ($2.20, $4.20 o $11.00) consultando al Módulo 10 antes de asentar calificación. | Lineamientos del Patronato UAM. |
+| Quinta Oportunidad | Conformación de un jurado especial de 3 profesores del área, distintos a evaluaciones previas. | Art. 93: Garantía de imparcialidad. |
+
+---
+
+### Submódulo 7.3: Rectificaciones, Correcciones e Impugnaciones
+
+Procedimientos normativos para alterar una calificación posterior a la firma de un acta.
+
+| Funcionalidad | Descripción | Regla de Negocio (RESUAM) |
+|--------------|-------------|--------------------------|
+| Corrección Al Alza | Modificación de nota por error administrativo a favor del alumno. No requiere opinión del alumno. | Transparencia de procesos internos. |
+| Corrección A La Baja | Modificación por error que perjudica al alumno. **Requiere firma de consentimiento del alumno.** | Transparencia y protección de derechos. |
+| Levantar Impugnación | El alumno solicita formalmente la revisión de su Evaluación Global o Recuperación. | Art. 94-95 RESUAM. |
+| Jurado por Impugnación | El sistema asigna un jurado que emite un dictamen final (Cambio o Confirmación de nota). | Art. 94-95 RESUAM. |
+| Trazabilidad de Actas | Sistemas Escolares genera la nueva acta. Esta debe referenciar siempre de manera transaccional el **Acta de Origen**. | Auditoría y control de Integridad (BD). |
+
+**Flujo de Correcciones e Impugnaciones (Auditoría Técnica):**
 
 ```text
 ┌─────────────────────────────────────────────────────────────────────────────────┐
-│                    PROCESO DE EVALUACIÓN DE RECUPERACIÓN                        │
+│              FLUJO DE CORRECCIÓN E IMPUGNACIÓN (TRAZABILIDAD)                   │
 ├─────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                 │
-│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐              │
-│  │ Alumno obtiene  │───▶│ Apertura de     │───▶│ Sistema valida  │              │
-│  │ NA en Ordinaria │    │ periodo de      │    │ límite de       │              │
-│  │                 │    │ Recuperación    │    │ oportunidades   │              │
-│  └─────────────────┘    └─────────────────┘    └─────────────────┘              │
-│                                                         │                       │
-│                                                         ▼                       │
-│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐              │
-│  │ Firma y Cierre  │◀───│ Captura de      │◀───│ Generación de   │              │
-│  │ de Acta por el  │    │ Calificación    │    │ Acta de         │              │
-│  │ Profesor        │    │ (MB, B, S, NA)  │    │ Recuperación    │              │
-│  └─────────────────┘    └─────────────────┘    └─────────────────┘              │
-│           │                                                                     │
-│           ▼                                                                     │
-│  ┌─────────────────┐                                                            │
-│  │ Envío a Kardex  │                                                            │
-│  │ (Módulo 8)      │                                                            │
-│  └─────────────────┘                                                            │
+│  A) CORRECCIÓN DE CALIFICACIÓN (Rectificación por el Profesor)                  │
+│     │                                                                           │
+│     ├─▶ SI ES AL ALZA (Beneficia al alumno):                                    │
+│     │   └─▶ Profesor firma conformidad. (No requiere al alumno)                 │
+│     │   └─▶ Se genera Nueva Acta referenciando [Acta_Origen]                    │
+│     │                                                                           │
+│     └─▶ SI ES A LA BAJA (Perjudica al alumno):                                  │
+│         └─▶ Profesor firma conformidad.                                         │
+│         └─▶ **Sistema exige Firma de Consentimiento del Alumno.** │
+│         └─▶ Se genera Nueva Acta referenciando [Acta_Origen]                    │
+│                                                                                 │
+│  B) IMPUGNACIÓN (Solicitada por el Alumno)                                      │
+│     │                                                                           │
+│     └─▶ 1. Alumno levanta impugnación.                                          │
+│     └─▶ 2. Sistema conforma Jurado (3 Profesores).                              │
+│     └─▶ 3. Jurado emite Dictamen (Cambio o Confirmación).                       │
+│     └─▶ 4. Sistemas Escolares asienta nota en Nueva Acta.                       │
+│     └─▶ 5. Se liga la transacción al [Acta_Origen] mediante FK.                 │
 │                                                                                 │
 └─────────────────────────────────────────────────────────────────────────────────┘
 
 ```
 
-> **Explicación didáctica:** Las evaluaciones especiales y de recuperación manejan su propio ciclo de vida. Un error común al programar esto es mezclar los identificadores de actas. El SiE-UAM debe generar un `ID_Acta` completamente nuevo para la evaluación de recuperación, vinculándolo al alumno, pero desvinculándolo del grupo ordinario original (ya que un examen de recuperación puede agrupar a estudiantes de diferentes profesores).
+### Variables de Datos Críticas del Módulo 7 (Alineadas a AGA)
 
-### Submódulo 7.3: Rectificación de Calificaciones
+El siguiente diccionario de datos servirá como base para el diagrama de clases en Enterprise Architect.
 
-| Funcionalidad | Descripción | Regla de Negocio (RESUAM) |
-|--------------|-------------|--------------------------|
-| Levantar solicitud de rectificación | El profesor titular inicia un trámite formal para corregir una calificación previamente firmada en un acta. | Procedimiento normativo post-acta. |
-| Validar vigencia temporal | El sistema permite rectificaciones ágiles si se hacen dentro del plazo marcado por el calendario escolar. | Calendario Escolar UAM. |
-| Gestionar justificación académica | Captura del motivo por el cual se solicita el cambio (ej. error de captura, revisión de examen). | Transparencia de procesos. |
-| Flujo de aprobación jerárquica | Si la solicitud está fuera de tiempo ordinario, el sistema la enruta para autorización del Director de División o Consejo Divisional. | Controles y balances institucionales. |
-| Ejecutar rectificación en BD | Una vez aprobada, el sistema actualiza la calificación, insertando un registro en la tabla de auditoría (logs). | Integridad referencial. |
+| Variable / Campo | Descripción | Tipo | Restricción / Valores |
+|------------------|-------------|------|-----------------------|
+| **Clave_Acta** | ID único del acta generada | Alfanumérico | PK (Llave primaria) |
+| **Clave_UEA** | Identificador de la materia | Numérico | FK (Llave Foránea a Módulo 2) |
+| **Tipo_Evaluacion** | Modalidad | Carácter | Global / Recuperacion / Quinta_Oportunidad |
+| **Rol_Profesor** | Función en el acta | Carácter | Calificar / Firmar / Ambos |
+| **Firma_Coordinador**| Firma en acta de recuperación | Carácter | S/N (Solo aplica en Recuperación) |
+| **Acta_Origen** | Rastro de auditoría | Alfanumérico | Referencia a FK del acta original si hay cambio |
+| **Calificacion** | Nota asignada | Carácter | MB, B, S, NA, AO, EE, RE, EQ, I |
+| **Firma_Consentimiento**| Aprobación del alumno | Carácter | S/N (Requerido en corrección a la baja) |
+| **Dictamen_Impugnacion**| Resultado del jurado | Carácter | Cambio / Confirmacion |
+| **Estado_Acta** | Ciclo de vida | Numérico | 1=Abierta, 2=Firma_Pendiente, 3=Cerrada |
 
-**Flujo de Rectificación (Auditoría Técnica):**
+---
 
-```text
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                   FLUJO DE APROBACIÓN PARA RECTIFICACIÓN                        │
-├─────────────────────────────────────────────────────────────────────────────────┤
-│                                                                                 │
-│ ┌────────────────┐    ┌────────────────┐                                        │
-│ │ Profesor nota  │───▶│ Crea solicitud │                                        │
-│ │ error en Acta  │    │ en el Sistema  │                                        │
-│ └────────────────┘    └────────────────┘                                        │
-│                               │                                                 │
-│                               ▼                                                 │
-│                       ¿Dentro del plazo                                         │
-│                       calendario?                                               │
-│                        /             \                                          │
-│                   SÍ  /               \ NO                                      │
-│                      ▼                 ▼                                        │
-│       ┌────────────────┐         ┌────────────────┐                             │
-│       │ Aprobación     │         │ Requiere VoBo. │                             │
-│       │ Automática     │         │ de Consejo/Dir.│                             │
-│       │ de Sist.       │         │ Divisional     │                             │
-│       └────────────────┘         └────────────────┘                             │
-│                      \                 /                                        │
-│                       \               /                                         │
-│                        ▼             ▼                                          │
-│                     ┌────────────────────┐                                      │
-│                     │ Actualización BD + │                                      │
-│                     │ Registro en Log de │                                      │
-│                     │ Auditoría          │                                      │
-│                     └────────────────────┘                                      │
-│                               │                                                 │
-│                               ▼                                                 │
-│                     ┌────────────────────┐                                      │
-│                     │ Sincronización con │                                      │
-│                     │ Kardex (Módulo 8)  │                                      │
-│                     └────────────────────┘                                      │
-│                                                                                 │
-└─────────────────────────────────────────────────────────────────────────────────┘
-```
+### Estados del Ciclo de Vida (Lifecycle) para UML
 
-### Variables de Datos Críticas del Módulo 7
+Para modelar los Diagramas de Máquina de Estados en EA:
 
-| Variable / Campo | Descripción | Tipo | Catálogo / Restricción |
-|------------------|-------------|------|------------------------|
-| **ID_Acta** | Identificador único del acta generada | Alfanumérico | PK (Llave primaria) |
-| **Clave_UEA** | Clave institucional de la materia | Numérico | FK (Llave foránea a Catálogo UEAs) |
-| **Tipo_Eval** | Modalidad de la evaluación | Carácter | O=Ordinaria, R=Recuperación, E=Especial |
-| **Calificacion** | Nota asignada al alumno | Carácter | MB, B, S, NA, NP (No Presentó) |
-| **Estado_Acta** | Control del ciclo de vida del acta | Numérico | 1=Abierta, 2=Capturando, 3=Firmada_Cerrada |
-| **Folio_Rectif** | Número de trámite si hubo rectificación | Numérico | Nulo si nunca se ha rectificado |
+* **Ciclo de vida del Acta:**
+  `Borrador (Abierta)` → `En_Firma (Pendiente de roles)` → `Firmada_Cerrada` → `Rectificada/Impugnada (Opcional)`
+* **Ciclo de vida de la Calificación (Detalle):**
+  `Capturada` → `Validada_Escala` → `Asentada` → `Histórica_Kardex`
+
+---
 
 ### Integración con Otros Módulos
 
-| Módulo | Punto de Integración | Datos Intercambiados |
-|--------|---------------------|---------------------|
-| **Módulo 6: Programación** | Generación inicial de actas | Toma listas de alumnos inscritos oficialmente en grupos para generar las actas vacías. |
-| **Módulo 4: Profesores** | Permisos y firmas | Valida que el `ID_Profesor` logueado coincida con el profesor asignado a la UEA para permitir la firma. |
-| **Módulo 8: Kardex** | Asentamiento histórico | Envía las calificaciones finales (MB, B, S) para calcular el promedio global y los créditos acumulados. |
+El Módulo de Evaluación funciona como un hub central que consume y exporta datos al resto de la arquitectura.
+
+| Módulo Origen/Destino | Punto de Integración | Datos Intercambiados |
+|-----------------------|---------------------|---------------------|
+| **Módulo 4: Programación** | Base operativa de entrada | Recepción de listas de grupos, validación de sinodales, áreas de conocimiento para jurados. |
+| **Módulo 10: Pagos** | Prerrequisito de Recuperaciones | Verifica cuotas pagadas ($2.20 / $4.20 / $11.00) antes de habilitar captura de calificación. |
+| **Módulo 3: Alumnos** | Modificación de Estatus | Si el alumno acumula NA, el módulo de evaluación dispara alertas de posible pérdida de calidad de alumno. |
+| **Módulo 8: Kardex** | Asentamiento final (Salida) | Envía el estatus final de las actas cerradas para actualizar créditos y promedios históricos. |
+
+---
 
 ### Conclusión del Módulo 7
 
-El **Módulo de Evaluación** representa el núcleo transaccional más sensible del SiE-UAM. A nivel de ingeniería de software, su mayor reto no es almacenar una letra (MB, B, S, NA), sino gestionar la concurrencia, la seguridad y los permisos. Garantizar que un acta firmada sea inmutable y que los procesos de rectificación dejen una huella auditable (logs) protege tanto a los alumnos como a los profesores de alteraciones no autorizadas, respetando al pie de la letra la legislación del RESUAM.
+El **Módulo de Evaluación Académica** representa el núcleo transaccional más sensible del SiE-UAM. A nivel de ingeniería de software, su mayor reto no es almacenar una simple letra (MB, B, S, NA), sino gestionar de forma robusta la **concurrencia, la seguridad de roles y la trazabilidad legal**. 
+
+La separación arquitectónica de roles (Calificador vs. Firmante), la intervención obligatoria del Coordinador en procesos de recuperación, y los estrictos controles de auditoría para correcciones e impugnaciones (asegurando el vínculo FK con el `Acta_Origen`) garantizan que el sistema tecnológico soporte y haga cumplir rigurosamente la normatividad estipulada en los Capítulos V y IX del RESUAM.
